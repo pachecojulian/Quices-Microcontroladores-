@@ -14,21 +14,21 @@
 ;Solución:
 :-------------------------------------------------------------
 
-ASUMIMOS QUE D (DIRECCIÓN DEL VECTOR) ESTÁ EN %O0
-    ! Y E (DIRECCIÓN DEL RESULTADO) ESTÁ EN %O1
+    ! ASUMIMOS QUE R0 (DIRECCIÓN DEL VECTOR) CONTIENE D
+    ! Y R1 (DIRECCIÓN DEL RESULTADO) CONTIENE E
 
-    LD  [%O0], %O2       ! CARGA X DESDE LA DIRECCIÓN D     → %O2 = 0x00000003
-    LD  [%O0 + 4], %O3   ! CARGA Y DESDE LA DIRECCIÓN D+4   → %O3 = 0x00000004
-    LD  [%O0 + 8], %O4   ! CARGA Z DESDE LA DIRECCIÓN D+8   → %O4 = 0x00000005
+    LD  [R0], R2       ! CARGA X DESDE LA DIRECCIÓN D     → R2 = 0x00000003
+    LD  [R0 + 4], R3   ! CARGA Y DESDE LA DIRECCIÓN D+4   → R3 = 0x00000004
+    LD  [R0 + 8], R4   ! CARGA Z DESDE LA DIRECCIÓN D+8   → R4 = 0x00000005
 
-    MULX %O2, %O2, %O5   ! X^2 = 3*3                        → %O5 = 0x00000009
-    MULX %O3, %O3, %O6   ! Y^2 = 4*4                        → %O6 = 0x00000010
-    MULX %O4, %O4, %O7   ! Z^2 = 5*5                        → %O7 = 0x00000019
+    SMUL R2, R2, R5    ! X^2 = 3*3                        → R5 = 0x00000009
+    SMUL R3, R3, R6    ! Y^2 = 4*4                        → R6 = 0x00000010
+    SMUL R4, R4, R7    ! Z^2 = 5*5                        → R7 = 0x00000019
 
-    ADD  %O5, %O6, %O5   ! X^2 + Y^2 = 9 + 16               → %O5 = 0x00000019
-    ADD  %O5, %O7, %O5   ! X^2 + Y^2 + Z^2 = 25 + 25        → %O5 = 0x00000032
+    ADD  R5, R6, R5    ! X^2 + Y^2 = 9 + 16               → R5 = 0x00000019
+    ADD  R5, R7, R5    ! X^2 + Y^2 + Z^2 = 25 + 25        → R5 = 0x00000032
 
-    ST   %O5, [%O1]      ! GUARDA EL RESULTADO EN LA DIRECCIÓN E
+    ST   R5, [R1]      ! GUARDA EL RESULTADO EN LA DIRECCIÓN E
 
     RETL
     NOP
