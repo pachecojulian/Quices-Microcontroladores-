@@ -1,0 +1,34 @@
+;-----------------------------------------------------------
+;Hacer un programa en ensamblador que recibe la dirección 'd' de memoria donde comienza un vector en R^3.
+;
+;     |<d>  |
+; V=  |<d+4>|
+;     |<d+8>|
+;
+;tambien recibe la dirección 'e' donde escribe la magnitud al cuadrado del vector
+;             2
+;        | x |
+;|V|^2=  | y |  = x^2 + y^2 + z^2
+;        | z |
+;
+;Solución:
+:-------------------------------------------------------------
+
+ASUMIMOS QUE D (DIRECCIÓN DEL VECTOR) ESTÁ EN %O0
+    ! Y E (DIRECCIÓN DEL RESULTADO) ESTÁ EN %O1
+
+    LD  [%O0], %O2       ! CARGA X DESDE LA DIRECCIÓN D     → %O2 = 0x00000003
+    LD  [%O0 + 4], %O3   ! CARGA Y DESDE LA DIRECCIÓN D+4   → %O3 = 0x00000004
+    LD  [%O0 + 8], %O4   ! CARGA Z DESDE LA DIRECCIÓN D+8   → %O4 = 0x00000005
+
+    MULX %O2, %O2, %O5   ! X^2 = 3*3                        → %O5 = 0x00000009
+    MULX %O3, %O3, %O6   ! Y^2 = 4*4                        → %O6 = 0x00000010
+    MULX %O4, %O4, %O7   ! Z^2 = 5*5                        → %O7 = 0x00000019
+
+    ADD  %O5, %O6, %O5   ! X^2 + Y^2 = 9 + 16               → %O5 = 0x00000019
+    ADD  %O5, %O7, %O5   ! X^2 + Y^2 + Z^2 = 25 + 25        → %O5 = 0x00000032
+
+    ST   %O5, [%O1]      ! GUARDA EL RESULTADO EN LA DIRECCIÓN E
+
+    RETL
+    NOP
