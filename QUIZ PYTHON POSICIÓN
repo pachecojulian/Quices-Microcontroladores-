@@ -1,0 +1,49 @@
+; Hacer código en Python que calcula la trayectoria del carro a partir de una lista de velocidades de las ruedas.;
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+def simular_trayectoria(v_r, v_l, L, dt=0.1):
+    """
+    Simula la trayectoria de un robot diferencial dado v_r y v_l.
+    
+    :param v_r: Lista de velocidades de la rueda derecha.
+    :param v_l: Lista de velocidades de la rueda izquierda.
+    :param L: Distancia entre las ruedas.
+    :param dt: Paso de tiempo en segundos.
+    :return: Lista de posiciones [(x, y, theta)].
+    """
+    # Posición y orientación iniciales
+    x, y, theta = 0, 0, 0  # x = 0, y = 0, theta = 0
+    trayectoria = [(x, y, theta)]
+    
+    # Iterar sobre las velocidades
+    for vr, vl in zip(v_r, v_l):
+        V = (vr + vl) / 2   # Velocidad lineal del centro del robot
+        omega = (vr - vl) / L  # Velocidad angular
+        
+        # Actualizar posición y orientación con integración de Euler
+        x += V * np.cos(theta) * dt
+        y += V * np.sin(theta) * dt
+        theta += omega * dt
+        
+        trayectoria.append((x, y, theta))
+    
+    return trayectoria
+
+# Ejemplo de uso
+v_r = [1, 1, 1, 0.5, 0]  # Velocidades de la rueda derecha
+v_l = [1, 0.5, 0, 0, 0]  # Velocidades de la rueda izquierda
+L = 0.5  # Distancia entre las ruedas
+
+trayectoria = simular_trayectoria(v_r, v_l, L)
+
+# Graficar la trayectoria
+x_vals, y_vals, _ = zip(*trayectoria)
+plt.plot(x_vals, y_vals, marker="o", linestyle="-")
+plt.xlabel("X (m)")
+plt.ylabel("Y (m)")
+plt.title("Trayectoria del Robot Diferencial")
+plt.grid()
+plt.show()
