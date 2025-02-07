@@ -1,0 +1,45 @@
+main:
+    LDR R0, =v_r           @ Cargar dirección de v_r
+    LDR R1, =v_l           @ Cargar dirección de v_l
+    LDR R2, =x             @ Dirección de x
+    LDR R3, =y             @ Dirección de y
+    LDR R4, =theta         @ Dirección de theta
+    LDR R5, =L             @ Cargar L
+    LDR R6, =DT            @ Cargar DT
+
+    MOV R7, #5             @ Número de iteraciones (5 valores en las listas)
+
+loop:
+    LDR S0, [R0], #4      @ Cargar v_r (y avanzar al siguiente dato)
+    LDR S1, [R1], #4      @ Cargar v_l (y avanzar al siguiente dato)
+    
+    ADD.F32 S2, S0, S1    @ S2 = v_r + v_l
+    MUL.F32 S2, S2, #0.5  @ S2 = (v_r + v_l) / 2  -> V
+    
+    SUB.F32 S3, S0, S1    @ S3 = v_r - v_l
+    DIV.F32 S3, S3, S5    @ S3 = (v_r - v_l) / L -> omega
+    
+    LDR S4, [R4]          @ Cargar theta actual
+    COS.F32 S5, S4        @ cos(theta)
+    MUL.F32 S6, S2, S5    @ V * cos(theta)
+    LDR S7, [R6]          @ Cargar DT
+    MUL.F32 S6, S6, S7    @ (V * cos(theta)) * DT
+    LDR S8, [R2]          @ Cargar x actual
+    ADD.F32 S8, S8, S6    @ x = x + (V * cos(theta)) * DT
+    STR S8, [R2]          @ Guardar nuevo x
+
+    SIN.F32 S5, S4        @ sin(theta)
+    MUL.F32 S6, S2, S5    @ V * sin(theta)
+    MUL.F32 S6, S6, S7    @ (V * sin(theta)) * DT
+    LDR S8, [R3]          @ Cargar y actual
+    ADD.F32 S8, S8, S6    @ y = y + (V * sin(theta)) * DT
+    STR S8, [R3]          @ Guardar nuevo y
+
+    MUL.F32 S6, S3, S7    @ omega * DT
+    ADD.F32 S4, S4, S6    @ theta = theta + omega * DT
+    STR S4, [R4]          @ Guardar nuevo theta
+
+    SUBS R7, R7, #1        @ Restar 1 al contador
+    BNE loop               @ Repetir si no ha terminado
+
+    B .                    @ Loop infinito (fin de ejecución)
